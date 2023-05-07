@@ -8,24 +8,25 @@ lib = ctypes.CDLL("./build/libmetal_erfinv.dylib")
 shader_path = os.path.abspath("./build/erfinv.metallib")
 
 # Define input and output arrays
-input_data = np.array([0.999, 0.5, 0.0, -0.3, -0.999], dtype=np.float32)
-output_data = np.empty_like(input_data)
+x = np.array([0.999, 0.5, 0.0, -0.3, -0.999], dtype=np.float32)
+y_metal = np.empty_like(x)
 
 # Call the compute_erfinv function from the shared library
 lib.compute_erfinv(
-    input_data.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-    output_data.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-    len(input_data),
+    x.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    y_metal.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
+    len(x),
     shader_path.encode("utf-8"),
 )
 # Print the results
-print("erfinv from metal: ", output_data)
+print("erfinv from metal: ", y_metal)
 
 # Compare with torch.erfinv
-print("erfinv from torch: ", torch.erfinv(torch.from_numpy(input_data)))
+y_torch = torch.erfinv(torch.from_numpy(x)).numpy()
+print("erfinv from torch: ", y_torch)
 
 # calculate mse
 print(
     "erfinv result MSE (metal.erfinv vs torch.erfinv): ",
-    np.square(output_data - torch.erfinv(torch.from_numpy(input_data))).mean(),
+    np.square(y_metal - y_torch).mean(),
 )
