@@ -2,18 +2,16 @@
 #include <iostream>
 #include <vector>
 
-int main(int argc, const char *argv[]) {
-  // Data size and input data
-  const int dataSize = 5;
-  float inputData[dataSize] = {0.999, 0.5, 0.0, -0.3, -0.999};
+// C-style function to compute the inverse error function using Metal
+extern "C" void compute_erfinv(const float *inputData, float *outputData,
+                               int dataSize, const char *shader_path) {
 
   // Get the default Metal device
   id<MTLDevice> device = MTLCreateSystemDefaultDevice();
 
   // Compile the Metal shader
   NSError *error;
-  NSString *shaderPath = [[NSBundle mainBundle] pathForResource:@"erfinv"
-                                                         ofType:@"metallib"];
+  NSString *shaderPath = [NSString stringWithUTF8String:shader_path];
   id<MTLLibrary> library = [device newLibraryWithFile:shaderPath error:&error];
   id<MTLFunction> kernelFunction =
       [library newFunctionWithName:@"compute_erfinv"];
@@ -46,33 +44,16 @@ int main(int argc, const char *argv[]) {
   [computeEncoder setBuffer:inputBuffer offset:0 atIndex:0];
   [computeEncoder setBuffer:outputBuffer offset:0 atIndex:1];
   [computeEncoder setBytes:&dataSize length:sizeof(uint) atIndex:2];
-
   // Dispatch the kernel
   MTLSize threadsPerGroup = MTLSizeMake(1, 1, 1);
   MTLSize numGroups = MTLSizeMake(dataSize, 1, 1);
   [computeEncoder dispatchThreadgroups:numGroups
                  threadsPerThreadgroup:threadsPerGroup];
-
   // End encoding and commit the command buffer
   [computeEncoder endEncoding];
   [commandBuffer commit];
-
   // Wait for the GPU to finish and get the output data
   [commandBuffer waitUntilCompleted];
-  float *outputData = static_cast<float *>(outputBuffer.contents);
-
-  // Print the results
-  std::cout << "Input values: ";
-  for (int i = 0; i < dataSize; i++) {
-    std::cout << inputData[i] << " ";
-  }
-  std::cout << std::endl;
-
-  std::cout << "Inverse error function results: ";
-  for (int i = 0; i < dataSize; i++) {
-    std::cout << outputData[i] << " ";
-  }
-  std::cout << std::endl;
-
-  return 0;
+  //*outputData = static_cast<float *>(outputBuffer.contents);
+  memcpy(outputData, outputBuffer.contents, dataSize * sizeof(float));
 }

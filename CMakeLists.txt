@@ -16,6 +16,7 @@ add_custom_command(
 add_custom_target(shader DEPENDS ${ERFINV_LIBRARY})
 
 # Executable
-add_executable(metal_erfinv main.mm)
+# add_executable(metal_erfinv main.mm)
+add_library(metal_erfinv SHARED main.mm)
 add_dependencies(metal_erfinv shader)
 target_compile_definitions(metal_erfinv PRIVATE ERFINV_LIBRARY="${ERFINV_LIBRARY}")
