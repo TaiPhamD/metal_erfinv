@@ -8,7 +8,7 @@ lib = ctypes.CDLL("./build/libmetal_erfinv.dylib")
 shader_path = os.path.abspath("./build/erfinv.metallib")
 
 # Define input and output arrays
-x = np.array([0.999, 0.5, 0.0, -0.3, -0.999], dtype=np.float32)
+x = np.array([1.1,1, 0.99999, 0.5, 0.4, 0.0, -0.1, -0.3, -0.99999, -1, -1.2], dtype=np.float32)
 y_metal = np.empty_like(x)
 
 # Call the compute_erfinv function from the shared library
