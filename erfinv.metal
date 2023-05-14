@@ -85,31 +85,29 @@ kernel void compute_erfinv( device float *output [[buffer(0)]],
       Y = uniforms.Y3;
       xs = x - 1.125;
       R = evaluate_polynomial(uniforms.P3, xs, 11) / evaluate_polynomial(uniforms.Q3, xs, 8);
-      result = Y * x + R * x;
     }
     else if ( x < 6){
       Y = uniforms.Y4;
       xs = x - 3.0;
       R = evaluate_polynomial(uniforms.P4, xs, 9) / evaluate_polynomial(uniforms.Q4, xs, 7);
-      result = Y * x + R * x;
+
     }
     else if (x < 18){
       Y = uniforms.Y5;
       xs = x - 6.0;
       R = evaluate_polynomial(uniforms.P5, xs, 9) / evaluate_polynomial(uniforms.Q5, xs, 7);
-      result = Y * x + R * x;
     }
     else if (x < 44){
       Y = uniforms.Y6;
       xs = x - 18.0;
       R = evaluate_polynomial(uniforms.P6, xs, 8) / evaluate_polynomial(uniforms.Q6, xs, 7);
-      result = Y * x + R * x;
+
     } else {
       Y = uniforms.Y7;
       xs = x - 44.0;
       R = evaluate_polynomial(uniforms.P7, xs, 8) / evaluate_polynomial(uniforms.Q7, xs, 7);
-      result = Y * x + R * x;
     }
+    result = Y * x + R * x;
    }
   output[index] = s * result; 
 };
