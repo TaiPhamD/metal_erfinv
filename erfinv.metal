@@ -2,11 +2,27 @@
 using namespace metal;
 
 struct Uniforms {
-  float a[4];
-  float b[4];
-  float c[4];
-  float d[2];
-
+  float Y1;
+  float P1[8];
+  float Q1[10];
+  float Y2;
+  float P2[9];
+  float Q2[9];
+  float Y3;
+  float P3[11];
+  float Q3[8];
+  float Y4;
+  float P4[9];
+  float Q4[7];
+  float Y5;
+  float P5[9];
+  float Q5[7];
+  float Y6;
+  float P6[8];
+  float Q6[7];
+  float Y7;
+  float P7[8];
+  float Q7[7];
 };
 
 kernel void compute_erfinv( device float *output [[buffer(0)]],
@@ -15,38 +31,6 @@ kernel void compute_erfinv( device float *output [[buffer(0)]],
                           uint index [[thread_position_in_grid]])  {
 
 
-  constant const float *a = uniforms.a;
-  constant const float *b = uniforms.b;
-  constant const float *c = uniforms.c;
-  constant const float *d = uniforms.d;
-  float y = input[index];
-  float x, z, num, dem; /*working variables */
-  /* coefficients in rational expansion */
-
-  float y_abs = abs(y);
-  if(y_abs > 1.0f){
-    output[index] = NAN;
-    return;
-  }
-  if(y_abs == 1.0f){
-    output[index] = copysign(INFINITY, y);
-    return;
-  }
-  if(y_abs <= 0.7f) {{
-    z = y * y;
-    num = (((a[3]*z + a[2])*z + a[1])*z + a[0]);
-    dem = ((((b[3]*z + b[2])*z + b[1])*z +b[0]) * z + 1.0f);
-    x = y * num / dem;
-  }}
-  else{
-    z = sqrt(-1.0f*log((1.0-y_abs)/2.0));
-    num = ((c[3]*z + c[2])*z + c[1]) * z + c[0];
-    dem = (d[1]*z + d[0])*z + 1.0f;
-    x = copysign(num, y) / dem;
-  }
-
-  // 2 round newton - erf(x)
-  //
-
-  output[index] = x;
-}
+  constant const float *P1 = uniforms.P1;
+  output[index] = P1[0];
+};
