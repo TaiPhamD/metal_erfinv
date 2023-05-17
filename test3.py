@@ -5,10 +5,14 @@ x = torch.Tensor([[[ 0.5, 1,  2.],
 
         [[ 9., 0, 11.],
          [12., 1, 14.],
-         [15., -1, 17.]]]).to('mps')
+         [15., -1.2, 17.]]]).to('mps')
 y = x.permute(1, 0, 2)[..., 1]
 print(x)
 print(y)
 
 y1 = torch.erfinv(y)
 print(y1)
+
+
+y2 = torch.erfinv(x)
+print(y2)
